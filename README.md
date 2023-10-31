@@ -5,6 +5,7 @@ display a real-time equalizer program as a demonstration of the skills learned
 by the Khalifa University ECCE402 class of Fall 2023.
 
 ## Background Theory
+
 ### DTFTs, DFTs, FFTs and FFT Buckets
 
 ### Hardware implementation
