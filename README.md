@@ -17,6 +17,7 @@ according to the magnitude of the frequency bin it corresponds to.
 The following kind of setup will suffice to build a mental picture as the
 project goes on.
 [WokWi Arduino Simulator MicroPython 6x6 LED matrix Control](https://wokwi.com/projects/379957049597714433)
+Or, alternatively, something much easier to control such as this [MAX7219 Dot Matrix Display Module for the Raspberry Pi Pico](https://www.instructables.com/Raspberry-Pi-Pico-MAX7219-8x8-Dot-Matrix-Scrolling/)
 
 ### Dependencies
 The following Python libraries were used to perform the signal processing,
