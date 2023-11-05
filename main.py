@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 import numpy as np
 import matplotlib.pyplot as plt
-import pydub
+import audiofile
 import sys
 import os.path
 
 
 def read_audio(audio_file):
-    a = pydub.AudioSegment.from_file(audio_file)
-    y = np.array(a.get_array_of_samples())
-    return a.frame_rate, np.float32(y) / 2**15  # normalize from 0 to 1
+    arr, sr = audiofile.read(audio_file)
+    if arr.shape[0] == 2:  # for 2 channel audio sources, only use one channel
+        arr = np.array(arr[1])
+    return sr, arr
 
 
 def make_fft_buckets(audio, buckets, sr):
@@ -47,7 +48,7 @@ def make_fft_buckets(audio, buckets, sr):
     return new_bins, 20 * np.log10(bucket_energies)
 
 
-def segment_audio(arr, ms_segments, pos, sr=44_100, windowing='none'):
+def segment_audio(arr, ms_segments, pos, sr=44_100, windowing="none"):
     """
     Takes an array and yields a specific slice of it to be processed.
     # of samples = ms_segments * sr / 1000
@@ -80,8 +81,11 @@ def main():
 
     ms_segments = 500
     seg_size = int(ms_segments * sr / 1000)
-    for i in range(int(a.size // seg_size)):
-        section = segment_audio(a, ms_segments, i, sr, windowing='hamming')
+    num_segments = int(a.size // seg_size)
+    for i in range(num_segments):
+        section = segment_audio(
+            a, ms_segments, np.random.randint(1, num_segments), sr, windowing="hamming"
+        )  # select a random segment to test
         t = np.arange(len(section)) / sr
         # Plot signal in time
         plt.plot(t, section)
@@ -90,11 +94,11 @@ def main():
         plt.title(f"Channel 1 of {audio_file}")
         plt.show()
 
+        freq, A = make_fft_buckets(section, 10, sr)
         # Plot FFT
-        # freq, A = make_fft_buckets(a, 10, sr)
-        # plt.plot(
-        #    freq[len(freq) // 2 :], A[len(freq) // 2 :]
-        # )  # only plotting positive frequencies
+        plt.plot(
+            freq[len(freq) // 2 :], A[len(freq) // 2 :]
+        )  # only plotting positive frequencies
         plt.show()
 
 
