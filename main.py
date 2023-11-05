@@ -9,9 +9,6 @@ import os.path
 def read_audio(audio_file):
     a = pydub.AudioSegment.from_file(audio_file)
     y = np.array(a.get_array_of_samples())
-    if a.channels == 2:
-        y = y.reshape((-1, 2))[0]  # Spectrum data contrained
-    # in one channel is plenty.
     return a.frame_rate, np.float32(y) / 2**15  # normalize from 0 to 1
 
 
