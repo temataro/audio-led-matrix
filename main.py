@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 import numpy as np
 import matplotlib.pyplot as plt
-import audiofile
+from scipy.io import wavfile
 import sys
 import os.path
 
 
-audio_file = "oblivion.mp3"
+audio_file = "never.wav"
 
 
 def read_audio(audio_file):
-    arr, sr = audiofile.read(audio_file)
+    sr, arr = wavfile.read(audio_file)
     if arr.shape[0] == 2:  # for 2 channel audio sources, only use one channel
         arr = np.array(arr[1])
     return sr, arr
