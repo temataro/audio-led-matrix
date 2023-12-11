@@ -4,20 +4,19 @@ This repository describes how to create an nxn LED matrix that lights up to
 display a real-time equalizer program as a demonstration of the skills learned
 by the Khalifa University ECCE402 class of Fall 2023.
 
-## Background Theory
-
-### DTFTs, DFTs, FFTs and FFT Buckets
-
 ### Hardware implementation
 
 The final objective is to physically implement an LED matrix that lights up
 according to the magnitude of the frequency bin it corresponds to.
 
-#### The weapon of choice: RP2040-Zero
+#### The weapon of choice: Raspberry Pi 4
 The following kind of setup will suffice to build a mental picture as the
 project goes on.
-[WokWi Arduino Simulator MicroPython 6x6 LED matrix Control](https://wokwi.com/projects/379957049597714433)
-Or, alternatively, something much easier to control such as this [MAX7219 Dot Matrix Display Module for the Raspberry Pi Pico](https://www.instructables.com/Raspberry-Pi-Pico-MAX7219-8x8-Dot-Matrix-Scrolling/)
+Something much easier to control than individual LEDs such as this [MAX7219 Dot
+Matrix Display Module for the Raspberry Pi
+Pico](https://www.instructables.com/Raspberry-Pi-Pico-MAX7219-8x8-Dot-Matrix-Scrolling/)
+can be used to display an LED matrix of the output can be used to display an
+LED matrix of the output.
 
 ### Dependencies
 The following Python libraries were used to perform the signal processing,
@@ -27,9 +26,16 @@ rendering, and acquisition.
 
 * [Matplotlib](https://github.com/matplotlib/matplotlib)
 
-* [Pydub](https://github.com/jiaaro/pydub)
+* [Scipy](https://github.com/scipy/scipy)
 
-            pip install numpy matplotlib pydub
+* [Luma LED Matrix Drivers] (https://pypi.org/project/luma.led-matrix)
+    * [Full installation guide] (https://luma-led-matrix.readthedocs.io/en/latest/install.html)
+* sounddevice
+    Depends on libportaudio2
+    ```sudo apt-get install libportaudio2```
+    On Rasbperry Pi 4.
 
+Next, install all dependencies using
+    ```pip3 install -r requirements.txt```
+A minimum of Python 3.9 is required.
 
-(Pydub is dependent on ffmpeg:    ``` sudo apt install ffmpeg ```)
