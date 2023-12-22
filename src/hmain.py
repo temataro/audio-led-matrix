@@ -16,7 +16,6 @@ import time
 import math
 import os
 
-TIME_INTERVAL = 0.1  # Represents the duration (in sec) of each chunk to be processed.
 WIDTH, HEIGHT = 16, 8  # Matrix configuration (each matrix is 8 rows * 8 col)
 NUM_BUCKETS = WIDTH  # Represents the number of frequency buckets in the LED matrix.
 HEIGHT_BUCKETS = HEIGHT  # Represents the height of each frequency bucket in the LED matrix.
@@ -93,9 +92,10 @@ def main_pi(reverb: float = 0) -> None:
     """
     Main function for the entire input -> processing -> output pipeline for
     equalizing audio from a .wav file. The audio is processed in intervals of
-    duration TIME_INTERVAL. "reverb" is an optional parameter to add a reverb
+    duration time_interval. "reverb" is an optional parameter to add a reverb
     ratio from 0 to 1.
     """
+    time_interval = 0.1  # Represents the duration (in sec) of each chunk to be processed.
 
     # Initialize LED matrix.
     serial = spi(port=0, device=0, gpio=noop())
@@ -124,7 +124,7 @@ def main_pi(reverb: float = 0) -> None:
     # Calculate the prototype band-pass filter response. This part only needs
     # to be calculated once since the filter bank is just shifted copies of the
     # filter. This makes processing much more efficient.
-    num_samples = int(TIME_INTERVAL * sr)
+    num_samples = int(time_interval * sr)
     nfft = 2 ** math.ceil(math.log2(num_samples)) + 1
     half_spectrum = (nfft + 1) // 2
     width_filter = math.ceil(half_spectrum / NUM_BUCKETS)
@@ -196,12 +196,12 @@ def main_pi(reverb: float = 0) -> None:
         # (accounting for processing time). A variable is used to keep track of
         # how many times the processing goes out of sync (error checking).
         try:
-            time.sleep(TIME_INTERVAL - offset)
+            time.sleep(time_interval - offset)
         except ValueError as e:
             num_errors += 1
-            print(num_errors)
             if num_errors > 3:
-                raise e
+                time_interval += 0.1  # reduce framerate
+                print(f"{num_errors} skips; reducing framerate to {time_interval}.")
 
 
 def main_pc():
