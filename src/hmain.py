@@ -17,45 +17,45 @@ import math
 import os
 
 TIME_INTERVAL = 0.1  # Represents the duration (in sec) of each chunk to be processed.
-# A TIME_INTERVAL of 0.1 s means a processing rate of 10 FPS.
-NUM_BUCKETS = 8  # Represents the number of frequency buckets in the LED matrix.
-HEIGHT_BUCKETS = 8  # Represents the height of each frequency bucket in the LED matrix.
-NUM_KNOBS = 8  # Represents the number of potentiometer knobs available.
+WIDTH, HEIGHT = 16, 8  # Matrix configuration (each matrix is 8 rows * 8 col)
+NUM_BUCKETS = WIDTH  # Represents the number of frequency buckets in the LED matrix.
+HEIGHT_BUCKETS = HEIGHT  # Represents the height of each frequency bucket in the LED matrix.
+NUM_KNOBS = WIDTH  # Represents the number of potentiometer knobs available.
 BUCKETS_PER_PTM = NUM_BUCKETS // NUM_KNOBS
 PATH = "../audio/never.wav"  # Path to the audio file. Must be a .wav file.
 
 
-def paint_led_matrix(
-    spectrum: np.array, device: max7219, width: int = 16, height: int = 8
-) -> None:
+def paint_led_matrix(spectrum: np.array, device: max7219) -> None:
     """
     Paint the (one-sided) magnitude spectrum passed as a Numpy array onto a
-    width x height LED matrix. "width" represents the number of frequency
-    buckets and "height" represents the number of LEDs per bucket available for
+    WIDTH x HEIGHT LED matrix. "WIDTH" represents the number of frequency
+    buckets and "HEIGHT" represents the number of LEDs per bucket available for
     display. The spectrum is expected to be provided for a real array of
     magnitudes from 0 to 1.
     """
 
-    # Downsize the spectrum to fit "width" buckets.
-    step = math.ceil(len(spectrum) / width)
-    spectrum = np.hstack((spectrum, np.zeros(step * width - len(spectrum))))[
+    # Downsize the spectrum to fit "WIDTH" buckets.
+    step = math.ceil(len(spectrum) / WIDTH)
+    spectrum = np.hstack((spectrum, np.zeros(step * WIDTH - len(spectrum))))[
         step // 2 :: step
     ]
     # Scale the spectrum to the height of the LED matrix and round to nearest
     # integer.
-    spectrum = (np.rint(height * spectrum)).astype(int)
+    spectrum = (np.rint(HEIGHT * spectrum)).astype(int)
 
     # Paint the LED matrix
     In = list((2 ** spectrum) - 1)
     N = len(In)
-    x1 = In[N//2:]
-    x2 = In[:N//2]
-    y = [x1[i//2] if i % 2 == 0 else x2[i//2] for i in range(N)]  # interleave x1 and x2
+    x1 = In[N // 2 :]
+    x2 = In[: N // 2]
+    y = [
+        x1[i // 2] if i % 2 == 0 else x2[i // 2] for i in range(N)
+    ]  # interleave x1 and x2
     y = [y[i] if y[i] > 0 else 0 for i in range(N)]  # ensure data doesn't have negative
-                                                     # values before converting to bytes
+    # values before converting to bytes
     image = y[::-1]
     image_data = bytes(image)
-    img = Image.frombytes("1", (width, height), image_data)
+    img = Image.frombytes("1", (WIDTH, HEIGHT), image_data)
     device.display(img)
 
     return spectrum
@@ -99,7 +99,7 @@ def main_pi(reverb: float = 0) -> None:
 
     # Initialize LED matrix.
     serial = spi(port=0, device=0, gpio=noop())
-    device = max7219(serial, cascaded=1, block_orientation=0, rotate=1)
+    device = max7219(serial, width=HEIGHT, height=WIDTH, rotate=1)
 
     # Initialize digital equalizer controls.
     root = tk.Tk()
@@ -186,7 +186,7 @@ def main_pi(reverb: float = 0) -> None:
         new_chunk_freq = np.clip((new_chunk_freq / norm), 0, 1)
 
         # Paint the LED matrix.
-        paint_led_matrix(new_chunk_freq, device, NUM_BUCKETS, HEIGHT_BUCKETS)
+        paint_led_matrix(new_chunk_freq, device)
 
         # Timer to deduct processing time
         t1 = time.perf_counter()
