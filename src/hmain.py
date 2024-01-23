@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from luma.led_matrix.device import max7219
 from luma.core.interface.serial import spi, noop
+from gpiozero import MCP3008
 import tkinter as tk
 import numpy as np
 from itertools import count
@@ -61,8 +62,8 @@ def paint_led_matrix(spectrum: np.array, device: max7219) -> None:
 
 
 def read_potentiometers(
-    knobs: list[tk.Scale],
-    knob_max: float,
+    knobs: list[MCP3008],
+    knob_max: float = 1.0,
     width: int = 4,
     height: int = 2,
     buckets_per_ptm: int = 2,
@@ -76,14 +77,14 @@ def read_potentiometers(
     particular bucket. The return value is a width x buckets_per_ptm array
     containing the respective amplifications per bucket.
     """
-
-    # Read values from potentiometer knobs normalized from 0 to 1.
-    potentiometers = np.array([knob.get() for knob in knobs]) / float(knob_max)
+    # Read values from potentiometer input
+    potentiometers = np.array([knob.value for knob in knobs]) / float(knob_max)
 
     # Scale the amplification array by the maximum amplification and resize to
     # fit buckets.
     potentiometers = height * potentiometers
     potentiometers = np.repeat(potentiometers, buckets_per_ptm)
+
 
     return potentiometers
 
@@ -96,6 +97,8 @@ def main_pi(reverb: float = 0) -> None:
     ratio from 0 to 1.
     """
     time_interval = 0.1  # Represents the duration (in sec) of each chunk to be processed.
+    # Initialize potentiometer array.
+    pots = [MCP3008(i) for i in range(8)]
 
     # Initialize LED matrix.
     serial = spi(port=0, device=0, gpio=noop())
@@ -104,7 +107,7 @@ def main_pi(reverb: float = 0) -> None:
     # Initialize digital equalizer controls.
     root = tk.Tk()
     root.title("Graphic Equalizer (EQ) Controls")
-    knob_max = 200
+    knob_max = 1.0
     title_label = tk.Label(root, text="Graphic Equalizer (EQ) Controls")
     knobs = [
         tk.Scale(root, from_=knob_max, to=0, width=20, length=200)

@@ -39,6 +39,7 @@ def compute_spectrum(wave: np.array, nfft: int, window: str | None = None) -> np
     return np.fft.fft(wave, nfft)[: (nfft + 1) // 2], len(wave)
 
 
+# TODO: change to log scale.
 def band_pass_filter(length: int, interval: int, center: int):
     """
     Returns the (one-sided) frequency spectrum of a band-pass filter with
