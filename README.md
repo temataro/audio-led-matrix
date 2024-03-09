@@ -28,8 +28,8 @@ rendering, and acquisition.
 
 * [Scipy](https://github.com/scipy/scipy)
 
-* [Luma LED Matrix Drivers] (https://pypi.org/project/luma.led-matrix)
-    * [Full installation guide] (https://luma-led-matrix.readthedocs.io/en/latest/install.html)
+* [Luma LED Matrix Drivers](https://pypi.org/project/luma.led-matrix)
+    * [Full installation guide](https://luma-led-matrix.readthedocs.io/en/latest/install.html)
 * sounddevice
     Depends on libportaudio2
     ```sudo apt-get install libportaudio2```
