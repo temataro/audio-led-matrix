@@ -1,4 +1,16 @@
 #!/usr/bin/python3
+
+"""
+The idea is to simply demonstrate how an equalizer would look if you stepped through
+each frame of the LED matrix output manually (press q in matplotlib to close a figure).
+Convince our TA to let us do this.
+
+Acknowledgements:
+    This team was comprised of (all!) 5 students in the course ECCE402 Digital Signals Processing
+    given in Fall 2023 under Dr. Paschalis Sofotasios: Amira Alshamsi, Hassan Aboelseoud, Hassan Safa,
+    Olyad Emiru, and Temesgen Ataro.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
